@@ -1,0 +1,8 @@
+{
+  "name": "Wealth Duels",
+  "version": "1.0.0-online-ready",
+  "listen_host": "0.0.0.0",
+  "start_command": "npm start",
+  "currency": "virtual_non_redeemable",
+  "status": "pre-release_online_build"
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Wealth Duels",
+  "version": "1.0.0-public",
+  "base": "Beta 1.8 CLEAN",
+  "currency": "virtual_non_redeemable",
+  "duels": "virtual_stakes_only",
+  "payment_gateway": "not_connected",
+  "files": [
+    ".env.example",
+    "PUBLIC_RELEASE.md",
+    "public/app.js",
+    "public/index.html",
+    "public/style.css",
+    "server.js"
+  ]
+}
