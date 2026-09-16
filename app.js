@@ -56,6 +56,8 @@ Animal:[['Caballo Árabe',25000,'🐎'],['Caballo Frisón',20000,'🐎'],['Akhal
 };
 const seenNames=new Set(ITEMS.map(x=>x.name));
 Object.entries(EXTRA_ITEMS).forEach(([cat,list])=>list.forEach(([name,price,icon],i)=>{if(!seenNames.has(name)){ITEMS.push({id:`extra_${cat}_${i}`,cat,name,price,icon});seenNames.add(name)}}));
+ITEMS.push({id:'mystery_emerald_hoodie',cat:'Exclusivo',name:'Emerald Wealth Hoodie',price:25000,icon:'🧥'});
+ITEMS.push({id:'mystery_shadow_gt',cat:'Auto',name:'Shadow GT — Wealth Edition',price:850000,icon:'🏎️'});
 
 const JOBS=[
 {id:'mine',icon:'⛏️',name:'Minador',desc:'Generador automático de minería. Actívalo y trabaja solo.',real:5,reward:120,seconds:30},
@@ -74,7 +76,11 @@ const DUEL_CATEGORIES=[
 const COUNTRIES={'República Dominicana':'🇩🇴','Estados Unidos':'🇺🇸','México':'🇲🇽','España':'🇪🇸','Colombia':'🇨🇴','Argentina':'🇦🇷','Venezuela':'🇻🇪','Puerto Rico':'🇵🇷','Brasil':'🇧🇷','Canadá':'🇨🇦','Francia':'🇫🇷','Italia':'🇮🇹','Reino Unido':'🇬🇧','Alemania':'🇩🇪','Japón':'🇯🇵','China':'🇨🇳','Emiratos Árabes Unidos':'🇦🇪','Otro':'🌎'};
 
 let user=null,state=null,generatorLoop=null;
-const ACC='wd_accounts_v2',OWN='wd_session_v2';
+const ACC='wd_accounts_v2',OWN='wd_session_v2',TOKEN='wd_online_token_v1';
+let onlineAccountsCache=null;
+async function apiFetch(path,options={}){const headers={'Content-Type':'application/json',...(options.headers||{})};const token=localStorage.getItem(TOKEN);if(token)headers.Authorization='Bearer '+token;const r=await fetch(path,{...options,headers});let data={};try{data=await r.json()}catch{}if(!r.ok)throw Object.assign(new Error(data.error||'Error de red'),data);return data;}
+async function fetchOnlineAccounts(){try{const d=await apiFetch('/api/accounts');onlineAccountsCache=d.accounts||{};return onlineAccountsCache}catch{return accounts()}}
+const allAccounts=()=>onlineAccountsCache||accounts();
 const accounts=()=>JSON.parse(localStorage.getItem(ACC)||'{}');
 const saveAccounts=a=>localStorage.setItem(ACC,JSON.stringify(a));
 const fmt=n=>'$'+Math.floor(Number(n)||0).toLocaleString('en-US');
@@ -92,7 +98,7 @@ function initGenerators(){
  if(typeof state.generatorSeconds!=='number')state.generatorSeconds=0;
  if(state.generatorSecondsDate!==todayKey()){state.generatorSeconds=0;state.generatorSecondsDate=todayKey()}
 }
-function save(){const a=accounts();a[user]=state;saveAccounts(a)}
+function save(){const a=accounts();a[user]=state;saveAccounts(a);const token=localStorage.getItem(TOKEN);if(token)apiFetch('/api/sync',{method:'POST',body:JSON.stringify({account:state})}).catch(()=>{});}
 function update(){
  const cash=document.querySelector('#cash');if(cash)cash.textContent=fmt(state.money);
  const net=document.querySelector('#networth');if(net)net.textContent=fmt(state.money+assetsOf(state));
@@ -103,30 +109,30 @@ function update(){
  const un=document.querySelector('#userName');if(un)un.textContent='@'+user;
 }
 function toast(t){let x=document.querySelector('#toast');if(!x){x=document.createElement('div');x.id='toast';document.body.appendChild(x)}x.textContent=t;x.classList.add('show');clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove('show'),1800)}
-function login(name,pass,create=false){
+async function login(name,pass,create=false){
  name=name.trim().toLowerCase();if(!name||!pass)return document.querySelector('#authMsg').textContent='Completa usuario y contraseña.';
- const a=accounts();
- if(create){if(a[name])return document.querySelector('#authMsg').textContent='Ese usuario ya existe.';a[name]={money:100000,xp:0,owned:[],purchases:{},generatorSeconds:0,generatorSecondsDate:todayKey(),generators:{},profile:{country:'República Dominicana',bio:'',instagram:'',tiktok:'',youtube:'',x:'',telegram:'',discord:''}};saveAccounts(a)}
- else if(!a[name])return document.querySelector('#authMsg').textContent='Cuenta no encontrada. Créala primero.';
- user=name;state=a[name];ensureProfile(state);initGenerators();save();openApp();startGeneratorLoop();
+ const msg=document.querySelector('#authMsg');msg.textContent='Conectando...';
+ try{const d=await apiFetch(create?'/api/register':'/api/login',{method:'POST',body:JSON.stringify({name,password:pass})});localStorage.setItem(TOKEN,d.token);user=d.name;state=d.account;ensureProfile(state);initGenerators();saveAccounts({...accounts(),[user]:state});save();await fetchOnlineAccounts();openApp();startGeneratorLoop();claimMystery();return}catch(e){
+   const a=accounts();
+   if(!create && a[name]){
+     try{const d=await apiFetch('/api/register',{method:'POST',body:JSON.stringify({name,password:pass})});localStorage.setItem(TOKEN,d.token);user=name;state=a[name];ensureProfile(state);initGenerators();save();await fetchOnlineAccounts();openApp();startGeneratorLoop();claimMystery();return}catch(_){}
+   }
+   msg.textContent=e.message||'No se pudo iniciar sesión.';
+ }
 }
-function openApp(){document.querySelector('#loginScreen').classList.add('hidden');document.querySelector('#app').classList.remove('hidden');update();renderTop();renderItems();renderJobs();go('home')}
-function logout(){localStorage.removeItem(OWN);if(generatorLoop)clearInterval(generatorLoop);location.reload()}
 document.querySelector('#loginBtn').onclick=()=>login(document.querySelector('#username').value,document.querySelector('#password').value);
 document.querySelector('#createBtn').onclick=()=>login(document.querySelector('#username').value,document.querySelector('#password').value,true);
 document.querySelector('#logout').onclick=logout;
 document.querySelector('#collect').onclick=collectMoney;
 document.querySelectorAll('.nav').forEach(b=>b.onclick=()=>go(b.dataset.page));
 document.querySelectorAll('[data-page]').forEach(b=>{if(!b.classList.contains('nav'))b.onclick=()=>go(b.dataset.page)});
-function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!==id));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===id));if(id==='top')renderTop();if(id==='duel')renderDuel();if(id==='jobs')renderJobs();if(id==='items')renderItems();if(id==='profile')renderProfile()}
+function go(id){document.querySelectorAll('.page').forEach(p=>p.classList.toggle('hidden',p.id!==id));document.querySelectorAll('.nav').forEach(n=>n.classList.toggle('active',n.dataset.page===id));if(id==='top')renderTop();if(id==='duel')renderDuel();if(id==='mystery')renderMystery();if(id==='jobs')renderJobs();if(id==='items')renderItems();if(id==='profile')renderProfile()}
 function collectMoney(){
- const key='wd_collect_next_'+user,now=Date.now(),next=Number(localStorage.getItem(key)||0);
- if(now<next){const left=Math.ceil((next-now)/1000);return toast(`Espera ${left}s para recoger otros $20.`)}
- state.money+=20;state.xp+=2;localStorage.setItem(key,String(now+10000));save();update();renderTop();toast('💰 +$20 · +2 XP');
+ state.money+=20;state.xp+=2;save();update();renderTop();toast('💰 +$20 · +2 XP');
 }
 function renderTop(){
  const el=document.querySelector('#leader');if(!el)return;
- const rows=Object.entries(accounts()).map(([name,s])=>{ensureProfile(s);return{name,s,wealth:Number(s.money||0)+assetsOf(s),lv:levelOf(s)}}).sort((a,b)=>b.wealth-a.wealth).slice(0,50);
+ const rows=Object.entries(allAccounts()).map(([name,s])=>{ensureProfile(s);return{name,s,wealth:Number(s.money||0)+assetsOf(s),lv:levelOf(s)}}).sort((a,b)=>b.wealth-a.wealth).slice(0,50);
  el.innerHTML=`<div class="rank rank-head"><div>#</div><div>Jugador</div><div>Patrimonio</div><div>Nivel</div><div></div></div>`+rows.map((r,i)=>`<div class="rank"><div class="pos">#${i+1}</div><div class="player"><b>${flagOf(r.s)} ${esc(r.name)}${r.name===user?' <small>(TÚ)</small>':''}</b><small>${esc(r.s.profile.country)}</small></div><div class="wealth">${fmt(r.wealth)}</div><div class="lv">Nivel ${r.lv}</div><div><button class="small-btn" onclick="showPublicProfile('${esc(r.name)}')">VER PERFIL</button></div></div>`).join('');
 }
 function renderItems(){
@@ -155,6 +161,17 @@ function categoryScore(player,cat){const vals=(player.owned||[]).map(findItem).f
 function otherPlayers(){const a=accounts();return Object.entries(a).filter(([name])=>name!==user)}
 function openDuel(stake){if(state.money<stake)return toast('No tienes suficiente dinero virtual.');if(!otherPlayers().length)return toast('Necesitas al menos otro jugador registrado para un 1 VS 1.');state.duelPending={stake};save();renderDuel()}
 function renderDuel(){const root=document.querySelector('#duelArea');if(!root)return;const pending=state.duelPending;const others=otherPlayers();root.innerHTML=`<div class="duel-panel"><p class="muted">Elige una apuesta y luego selecciona un rival. Solo dinero virtual no retirable.</p><div class="stake-grid">${DUEL_STAKES.map(s=>`<button class="stake ${pending?.stake===s?'active':''}" onclick="openDuel(${s})">${fmt(s)}</button>`).join('')}</div>${pending?`<div class="duel-select"><h3>Selecciona rival</h3><div class="opponents">${others.map(([name,a])=>`<button class="opponent" onclick="challengeDuel('${esc(name)}')"><b>${flagOf(a)} ${esc(name)}</b><small>Nivel ${levelOf(a)} · ${fmt(Number(a.money||0)+assetsOf(a))}</small></button>`).join('')}</div></div>`:''}<div class="duel-rules"><h3>🏆 Competencias</h3>${DUEL_CATEGORIES.map((x,i)=>`<div>${i+1}. ${x.label}</div>`).join('')}<p class="muted">Se compara el artículo de mayor valor de cada categoría. Gana quien consiga más categorías.</p></div></div>`}
-function challengeDuel(opponentName){const d=state.duelPending;if(!d)return;const a=accounts(),opp=a[opponentName];if(!opp)return;if(state.money<d.stake)return toast('Fondos insuficientes.');if(Number(opp.money||0)<d.stake)return toast('Ese rival no tiene suficiente dinero virtual para cubrir la apuesta.');let me=0,them=0,results=[];DUEL_CATEGORIES.forEach(c=>{const mine=categoryScore(state,c.id),his=categoryScore(opp,c.id);if(mine>his)me++;else if(his>mine)them++;results.push({label:c.label,mine,his})});if(me===them)return alert(`⚔️ EMPATE\n\nTú: ${me}\n${opponentName}: ${them}\n\nLa apuesta no cambia.`);const win=me>them;if(win){state.money+=d.stake;opp.money-=d.stake}else{state.money-=d.stake;opp.money+=d.stake}state.xp=Math.max(0,(state.xp||0)+(win?25:-10));opp.xp=Math.max(0,(opp.xp||0)+(win?-10:25));state.duelPending=null;a[user]=state;a[opponentName]=opp;saveAccounts(a);save();update();renderTop();renderDuel();alert(`RESULTADO 1 VS 1\n\nTú: ${me} competencias\n${opponentName}: ${them} competencias\n\n${win?'🏆 GANASTE':'💀 PERDISTE'}\n${win?'+':'-'}${fmt(d.stake)}\n\n${results.map(r=>`${r.label}: ${fmt(r.mine)} vs ${fmt(r.his)}`).join('\n')}`)}
+async function challengeDuel(opponentName){
+ const d=state.duelPending;if(!d)return;
+ try{const token=localStorage.getItem(TOKEN);if(token){save();const out=await apiFetch('/api/duel',{method:'POST',body:JSON.stringify({opponent:opponentName,stake:d.stake})});if(out.draw){state.duelPending=null;save();renderDuel();return alert(`⚔️ EMPATE\n\nTú: ${out.mine}\n${opponentName}: ${out.his}\n\nLa apuesta no cambia.`)}state.money+=out.win?d.stake:-d.stake;state.xp=Math.max(0,(state.xp||0)+(out.win?25:-10));state.duelPending=null;save();await fetchOnlineAccounts();update();renderTop();renderDuel();return alert(`RESULTADO 1 VS 1\n\nTú: ${out.mine} competencias\n${opponentName}: ${out.his} competencias\n\n${out.win?'🏆 GANASTE':'💀 PERDISTE'}\n${out.win?'+':'-'}${fmt(d.stake)}\n\n${out.results.map(r=>`${r.label}: ${fmt(r.mine)} vs ${fmt(r.his)}`).join('\n')}`)}
+ }catch(e){return toast(e.message||'No se pudo realizar el duelo.')}
+}
 
-let session=localStorage.getItem(OWN);if(session&&accounts()[session]){user=session;state=accounts()[session];ensureProfile(state);initGenerators();save();openApp();startGeneratorLoop()}
+
+async function renderMystery(){const sold=document.querySelector('#mysterySold'),timer=document.querySelector('#mysteryTimer'),btn=document.querySelector('#mysteryBuy');if(!sold||!timer)return;try{const d=await apiFetch('/api/mystery/status');sold.textContent=`${d.sold} / ${d.limit}`;btn.disabled=!d.active;btn.textContent=d.active?'COMPRAR POR US$5':(d.sold>=d.limit?'AGOTADA':'FINALIZADA');timer.textContent=formatCountdown(d.remainingMs);if(window.mysteryTick)clearInterval(window.mysteryTick);window.mysteryTick=setInterval(async()=>{try{const x=await apiFetch('/api/mystery/status');sold.textContent=`${x.sold} / ${x.limit}`;timer.textContent=formatCountdown(x.remainingMs);btn.disabled=!x.active;if(!x.active)btn.textContent=x.sold>=x.limit?'AGOTADA':'FINALIZADA'}catch{}},1000)}catch(e){timer.textContent='No disponible'}}
+function formatCountdown(ms){let s=Math.max(0,Math.floor(ms/1000)),h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;return [h,m,x].map(v=>String(v).padStart(2,'0')).join(':')}
+async function buyMystery(){try{const d=await apiFetch('/api/mystery/checkout',{method:'POST'});if(d.url){location.href=d.url;return}}catch(e){if(e.setupRequired)return toast('⚙️ Falta configurar Stripe en Render para cobrar los US$5 reales.');return toast(e.message||'No se pudo abrir el checkout.')}}
+async function claimMystery(){const params=new URLSearchParams(location.search),sid=params.get('mystery_session');if(!sid)return;try{const d=await apiFetch('/api/mystery/claim',{method:'POST',body:JSON.stringify({sessionId:sid})});const box=document.querySelector('#mysteryReward');box.classList.remove('hidden');box.innerHTML=`<div class="reward-icon">${d.reward.icon}</div><h3>🎉 ¡CAJA ABIERTA!</h3><p>Ganaste <b>${esc(d.reward.name)}</b>.</p><p class="muted">Exclusivo · Valor virtual: ${fmt(d.reward.value)}</p>`;state.owned=Array.from(new Set([...(state.owned||[]),d.reward.id]));save();renderItems();history.replaceState({},'',location.pathname);go('mystery');toast('🎁 Recompensa entregada')}catch(e){toast(e.message||'No se pudo entregar la recompensa.')}}
+document.querySelector('#mysteryBuy')?.addEventListener('click',buyMystery);
+
+let session=localStorage.getItem(OWN);if(session&&accounts()[session]){user=session;state=accounts()[session];ensureProfile(state);initGenerators();save();openApp();startGeneratorLoop();claimMystery()}
