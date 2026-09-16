@@ -1,0 +1,667 @@
+[
+  {
+    "id": "m4",
+    "cat": "Auto",
+    "name": "BMW M4 CSL",
+    "price": 140000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "gt3",
+    "cat": "Auto",
+    "name": "Porsche 911 GT3 RS",
+    "price": 245000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "huracan",
+    "cat": "Auto",
+    "name": "Lamborghini Huracán STO",
+    "price": 330000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "ferrari296",
+    "cat": "Auto",
+    "name": "Ferrari 296 GTB",
+    "price": 340000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "chiron",
+    "cat": "Auto",
+    "name": "Bugatti Chiron Super Sport",
+    "price": 3800000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "sf90",
+    "cat": "Auto",
+    "name": "Ferrari SF90 Stradale",
+    "price": 575000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "revuelto",
+    "cat": "Auto",
+    "name": "Lamborghini Revuelto",
+    "price": 608000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "urus",
+    "cat": "Auto",
+    "name": "Lamborghini Urus",
+    "price": 250000,
+    "icon": "🚙"
+  },
+  {
+    "id": "gt63",
+    "cat": "Auto",
+    "name": "Mercedes-AMG GT 63",
+    "price": 180000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "s680",
+    "cat": "Auto",
+    "name": "Mercedes-Maybach S 680",
+    "price": 240000,
+    "icon": "🚘"
+  },
+  {
+    "id": "bentley",
+    "cat": "Auto",
+    "name": "Bentley Continental GT",
+    "price": 300000,
+    "icon": "🚘"
+  },
+  {
+    "id": "mclaren750",
+    "cat": "Auto",
+    "name": "McLaren 750S",
+    "price": 330000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "aston",
+    "cat": "Auto",
+    "name": "Aston Martin DB12",
+    "price": 250000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "rolls",
+    "cat": "Auto",
+    "name": "Rolls-Royce Ghost",
+    "price": 350000,
+    "icon": "🚘"
+  },
+  {
+    "id": "rollscullinan",
+    "cat": "Auto",
+    "name": "Rolls-Royce Cullinan",
+    "price": 400000,
+    "icon": "🚙"
+  },
+  {
+    "id": "koenig",
+    "cat": "Auto",
+    "name": "Koenigsegg Jesko",
+    "price": 3000000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "pagani",
+    "cat": "Auto",
+    "name": "Pagani Huayra",
+    "price": 3500000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "daytona",
+    "cat": "Joya",
+    "name": "Rolex Daytona Rainbow",
+    "price": 450000,
+    "icon": "⌚"
+  },
+  {
+    "id": "nautilus",
+    "cat": "Joya",
+    "name": "Patek Philippe Nautilus",
+    "price": 120000,
+    "icon": "⌚"
+  },
+  {
+    "id": "royaloak",
+    "cat": "Joya",
+    "name": "Audemars Piguet Royal Oak",
+    "price": 280000,
+    "icon": "⌚"
+  },
+  {
+    "id": "astronomia",
+    "cat": "Joya",
+    "name": "Jacob & Co. Astronomia",
+    "price": 1000000,
+    "icon": "⌚"
+  },
+  {
+    "id": "cartierlove",
+    "cat": "Joya",
+    "name": "Cartier Love Pavé",
+    "price": 46000,
+    "icon": "💎"
+  },
+  {
+    "id": "cuban",
+    "cat": "Joya",
+    "name": "Cadena Cubana 20mm Diamantes",
+    "price": 150000,
+    "icon": "💎"
+  },
+  {
+    "id": "ring",
+    "cat": "Joya",
+    "name": "Harry Winston Anillo 10ct",
+    "price": 850000,
+    "icon": "💎"
+  },
+  {
+    "id": "diamondset",
+    "cat": "Joya",
+    "name": "Set Diamantes Imperial",
+    "price": 1200000,
+    "icon": "💎"
+  },
+  {
+    "id": "emerald",
+    "cat": "Joya",
+    "name": "Collar Esmeralda Verde",
+    "price": 600000,
+    "icon": "💚"
+  },
+  {
+    "id": "sapphire",
+    "cat": "Joya",
+    "name": "Brazalete Zafiro Real",
+    "price": 400000,
+    "icon": "💎"
+  },
+  {
+    "id": "goldchain",
+    "cat": "Joya",
+    "name": "Cadena Oro Macizo 24K",
+    "price": 85000,
+    "icon": "⛓️"
+  },
+  {
+    "id": "villa",
+    "cat": "Mansión",
+    "name": "Villa Moderna",
+    "price": 2500000,
+    "icon": "🏡"
+  },
+  {
+    "id": "beverly",
+    "cat": "Mansión",
+    "name": "Mansión Beverly Hills",
+    "price": 12000000,
+    "icon": "🏰"
+  },
+  {
+    "id": "miami",
+    "cat": "Mansión",
+    "name": "Mansión Miami Oceanfront",
+    "price": 18000000,
+    "icon": "🌴"
+  },
+  {
+    "id": "dubai",
+    "cat": "Mansión",
+    "name": "Palacio Privado Dubai",
+    "price": 35000000,
+    "icon": "🏰"
+  },
+  {
+    "id": "monaco",
+    "cat": "Mansión",
+    "name": "Villa Costa Azul",
+    "price": 28000000,
+    "icon": "🌊"
+  },
+  {
+    "id": "malibu",
+    "cat": "Mansión",
+    "name": "Estate Malibu",
+    "price": 22000000,
+    "icon": "🏖️"
+  },
+  {
+    "id": "penthouse",
+    "cat": "Mansión",
+    "name": "Penthouse Manhattan",
+    "price": 30000000,
+    "icon": "🏙️"
+  },
+  {
+    "id": "lake",
+    "cat": "Mansión",
+    "name": "Lakefront Estate",
+    "price": 9000000,
+    "icon": "🏞️"
+  },
+  {
+    "id": "azimut",
+    "cat": "Yate",
+    "name": "Azimut Grande 30M",
+    "price": 8000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "sunseeker",
+    "cat": "Yate",
+    "name": "Sunseeker 95 Yacht",
+    "price": 12000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "ferretti",
+    "cat": "Yate",
+    "name": "Ferretti 1000",
+    "price": 20000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "ocean",
+    "cat": "Yate",
+    "name": "Ocean Explorer 50M",
+    "price": 45000000,
+    "icon": "🛳️"
+  },
+  {
+    "id": "superyacht",
+    "cat": "Yate",
+    "name": "Superyacht Imperial",
+    "price": 75000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "gulf",
+    "cat": "Jet",
+    "name": "Gulfstream G650",
+    "price": 70000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "global",
+    "cat": "Jet",
+    "name": "Bombardier Global 7500",
+    "price": 80000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "falcon",
+    "cat": "Jet",
+    "name": "Dassault Falcon 10X",
+    "price": 75000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "legacy",
+    "cat": "Jet",
+    "name": "Embraer Praetor 600",
+    "price": 30000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "private",
+    "cat": "Jet",
+    "name": "Wealth Duels Private Jet",
+    "price": 150000000,
+    "icon": "🛩️"
+  },
+  {
+    "id": "extra_Auto_10",
+    "cat": "Auto",
+    "name": "Lamborghini Urus SE",
+    "price": 254000,
+    "icon": "🚙"
+  },
+  {
+    "id": "extra_Auto_11",
+    "cat": "Auto",
+    "name": "Mercedes-AMG GT 63 S",
+    "price": 190000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "extra_Auto_15",
+    "cat": "Auto",
+    "name": "Rimac Nevera",
+    "price": 2500000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "extra_Auto_16",
+    "cat": "Auto",
+    "name": "Aston Martin Valkyrie",
+    "price": 3000000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "extra_Auto_17",
+    "cat": "Auto",
+    "name": "Ferrari Daytona SP3",
+    "price": 2200000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "extra_Auto_18",
+    "cat": "Auto",
+    "name": "Mercedes-AMG One",
+    "price": 2700000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "extra_Auto_19",
+    "cat": "Auto",
+    "name": "Gordon Murray T.50",
+    "price": 2500000,
+    "icon": "🏎️"
+  },
+  {
+    "id": "extra_Joya_3",
+    "cat": "Joya",
+    "name": "Jacob & Co Astronomia",
+    "price": 280000,
+    "icon": "⌚"
+  },
+  {
+    "id": "extra_Joya_5",
+    "cat": "Joya",
+    "name": "Harry Winston Diamond Ring",
+    "price": 180000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Joya_6",
+    "cat": "Joya",
+    "name": "Graff Diamond Necklace",
+    "price": 1200000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Joya_7",
+    "cat": "Joya",
+    "name": "Bvlgari Serpenti High Jewelry",
+    "price": 500000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Joya_8",
+    "cat": "Joya",
+    "name": "Chopard High Jewelry Set",
+    "price": 750000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Joya_9",
+    "cat": "Joya",
+    "name": "24K Gold Cuban Chain",
+    "price": 35000,
+    "icon": "⛓️"
+  },
+  {
+    "id": "extra_Joya_10",
+    "cat": "Joya",
+    "name": "Blue Sapphire Bracelet",
+    "price": 220000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Joya_11",
+    "cat": "Joya",
+    "name": "Emerald Necklace",
+    "price": 310000,
+    "icon": "💚"
+  },
+  {
+    "id": "extra_Joya_12",
+    "cat": "Joya",
+    "name": "Diamond Tennis Bracelet",
+    "price": 95000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Joya_13",
+    "cat": "Joya",
+    "name": "Van Cleef High Jewelry",
+    "price": 400000,
+    "icon": "💎"
+  },
+  {
+    "id": "extra_Mansión_0",
+    "cat": "Mansión",
+    "name": "Beverly Hills Estate",
+    "price": 38000000,
+    "icon": "🏰"
+  },
+  {
+    "id": "extra_Mansión_1",
+    "cat": "Mansión",
+    "name": "Miami Oceanfront Mansion",
+    "price": 22000000,
+    "icon": "🌴"
+  },
+  {
+    "id": "extra_Mansión_2",
+    "cat": "Mansión",
+    "name": "Dubai Private Palace",
+    "price": 45000000,
+    "icon": "🏰"
+  },
+  {
+    "id": "extra_Mansión_3",
+    "cat": "Mansión",
+    "name": "Malibu Beach Estate",
+    "price": 32000000,
+    "icon": "🏖️"
+  },
+  {
+    "id": "extra_Mansión_4",
+    "cat": "Mansión",
+    "name": "Manhattan Penthouse",
+    "price": 35000000,
+    "icon": "🏙️"
+  },
+  {
+    "id": "extra_Mansión_5",
+    "cat": "Mansión",
+    "name": "Palm Jumeirah Villa",
+    "price": 30000000,
+    "icon": "🌴"
+  },
+  {
+    "id": "extra_Mansión_6",
+    "cat": "Mansión",
+    "name": "Bel Air Mega Mansion",
+    "price": 95000000,
+    "icon": "🏰"
+  },
+  {
+    "id": "extra_Mansión_7",
+    "cat": "Mansión",
+    "name": "Monaco Luxury Penthouse",
+    "price": 55000000,
+    "icon": "🏙️"
+  },
+  {
+    "id": "extra_Mansión_8",
+    "cat": "Mansión",
+    "name": "French Riviera Villa",
+    "price": 28000000,
+    "icon": "🌊"
+  },
+  {
+    "id": "extra_Mansión_9",
+    "cat": "Mansión",
+    "name": "Lake Como Villa",
+    "price": 18000000,
+    "icon": "🏞️"
+  },
+  {
+    "id": "extra_Yate_1",
+    "cat": "Yate",
+    "name": "Sunseeker 95",
+    "price": 11000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "extra_Yate_3",
+    "cat": "Yate",
+    "name": "Benetti Oasis 40M",
+    "price": 22000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "extra_Yate_4",
+    "cat": "Yate",
+    "name": "Heesen 50M",
+    "price": 45000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "extra_Yate_5",
+    "cat": "Yate",
+    "name": "Feadship 60M",
+    "price": 80000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "extra_Yate_6",
+    "cat": "Yate",
+    "name": "Lürssen 90M Superyacht",
+    "price": 250000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "extra_Yate_7",
+    "cat": "Yate",
+    "name": "Oceanco 100M",
+    "price": 300000000,
+    "icon": "🛥️"
+  },
+  {
+    "id": "extra_Jet_1",
+    "cat": "Jet",
+    "name": "Gulfstream G700",
+    "price": 80000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "extra_Jet_5",
+    "cat": "Jet",
+    "name": "Bombardier Global 8000",
+    "price": 80000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "extra_Jet_6",
+    "cat": "Jet",
+    "name": "Gulfstream G800",
+    "price": 75000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "extra_Jet_7",
+    "cat": "Jet",
+    "name": "Boeing Business Jet",
+    "price": 100000000,
+    "icon": "✈️"
+  },
+  {
+    "id": "extra_Animal_0",
+    "cat": "Animal",
+    "name": "Caballo Árabe",
+    "price": 25000,
+    "icon": "🐎"
+  },
+  {
+    "id": "extra_Animal_1",
+    "cat": "Animal",
+    "name": "Caballo Frisón",
+    "price": 20000,
+    "icon": "🐎"
+  },
+  {
+    "id": "extra_Animal_2",
+    "cat": "Animal",
+    "name": "Akhal-Teke",
+    "price": 100000,
+    "icon": "🐎"
+  },
+  {
+    "id": "extra_Animal_3",
+    "cat": "Animal",
+    "name": "Caballo de Carrera Campeón",
+    "price": 500000,
+    "icon": "🏇"
+  },
+  {
+    "id": "extra_Animal_4",
+    "cat": "Animal",
+    "name": "Halcón Peregrino",
+    "price": 100000,
+    "icon": "🦅"
+  },
+  {
+    "id": "extra_Animal_5",
+    "cat": "Animal",
+    "name": "Halcón de Cetrería",
+    "price": 80000,
+    "icon": "🦅"
+  },
+  {
+    "id": "extra_Animal_6",
+    "cat": "Animal",
+    "name": "León Blanco (santuario)",
+    "price": 150000,
+    "icon": "🦁"
+  },
+  {
+    "id": "extra_Animal_7",
+    "cat": "Animal",
+    "name": "Tigre de Bengala (santuario)",
+    "price": 200000,
+    "icon": "🐅"
+  },
+  {
+    "id": "extra_Animal_8",
+    "cat": "Animal",
+    "name": "Loro Exótico",
+    "price": 5000,
+    "icon": "🦜"
+  },
+  {
+    "id": "extra_Animal_9",
+    "cat": "Animal",
+    "name": "Perro de Exhibición Campeón",
+    "price": 30000,
+    "icon": "🐕"
+  },
+  {
+    "id": "mystery_emerald_hoodie",
+    "cat": "Exclusivo",
+    "name": "Emerald Wealth Hoodie",
+    "price": 25000,
+    "icon": "🧥"
+  },
+  {
+    "id": "mystery_shadow_gt",
+    "cat": "Auto",
+    "name": "Shadow GT — Wealth Edition",
+    "price": 850000,
+    "icon": "🏎️"
+  }
+]
