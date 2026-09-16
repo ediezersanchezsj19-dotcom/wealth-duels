@@ -24,3 +24,12 @@ Then open http://127.0.0.1:3000
 8. Add backups, logging and abuse controls.
 
 The current package is a PUBLIC BETA/PRE-RELEASE build, not a secure real-money production economy.
+
+
+## 2026 Upgrade — Green UI + Mystery Drop + Online Duels
+- The $20 collect button has no cooldown.
+- Added a Mystery Box priced at US$5 with two exclusive virtual rewards.
+- The drop is capped at 100 delivered boxes and runs for 24 hours from the first live checkout.
+- Real payment uses Stripe Checkout and requires `STRIPE_SECRET_KEY` plus `PUBLIC_URL` in Render. Until configured, the button does not charge anyone.
+- Added server-backed accounts, global leaderboard data and server-side 1v1 duel settlement for the live process.
+- The server keeps the 100-box cap and duel balances on the backend; for durable production storage across restarts/multiple instances, connect PostgreSQL before a full public launch.
