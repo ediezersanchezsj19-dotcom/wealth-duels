@@ -1,6 +1,0 @@
-{
-  "name": "wealth-duels",
-  "version": "1.2.0",
-  "private": true,
-  "scripts": {"start": "node server.js", "dev": "node server.js"}
-}
