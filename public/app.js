@@ -109,7 +109,12 @@ function update(){
  const un=document.querySelector('#userName');if(un)un.textContent='@'+user;
 }
 function toast(t){let x=document.querySelector('#toast');if(!x){x=document.createElement('div');x.id='toast';document.body.appendChild(x)}x.textContent=t;x.classList.add('show');clearTimeout(x._t);x._t=setTimeout(()=>x.classList.remove('show'),1800)}
-async function login(name,pass,create=false){
+function openApp(){
+  document.querySelector('#loginScreen')?.classList.add('hidden');
+  document.querySelector('#app')?.classList.remove('hidden');
+  update();
+  go('home');
+}async function login(name,pass,create=false){
  name=name.trim().toLowerCase();if(!name||!pass)return document.querySelector('#authMsg').textContent='Completa usuario y contraseña.';
  const msg=document.querySelector('#authMsg');msg.textContent='Conectando...';
  try{const d=await apiFetch(create?'/api/register':'/api/login',{method:'POST',body:JSON.stringify({name,password:pass})});localStorage.setItem(TOKEN,d.token);user=d.name;state=d.account;ensureProfile(state);initGenerators();saveAccounts({...accounts(),[user]:state});save();await fetchOnlineAccounts();openApp();startGeneratorLoop();claimMystery();return}catch(e){
