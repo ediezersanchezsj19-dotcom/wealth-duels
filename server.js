@@ -70,9 +70,9 @@ function ensureSeedAccounts(){
   };
   const all=ITEMS.map(x=>x.id);
   seed('wealthking','demo@wealthduels.test','WealthDuels2026!',999999999999999,8000,all,'Cuenta especial de demostración para probar el ranking, perfiles, colección y duelos.');
-  seed('luxurypro','pro@wealthduels.test','Luxury2026!',100000000,1200,['sf90','villa','extra_Animal_0','nautilus','azimut','gulf'],'Coleccionista de prueba con una pieza para cada categoría.');
-  // Nunca se agregan bots al matchmaking.
+  // Nunca se agregan bots ni rivales automáticos al matchmaking.
   if(db.accounts.duelbot){delete db.accounts.duelbot;}
+  if(db.accounts.luxurypro){delete db.accounts.luxurypro;}
   saveDb();
 }
 ensureSeedAccounts();
@@ -91,8 +91,17 @@ function sendRecoveryEmail(email,link){
 }
 function itemScore(a,cat,id){const x=itemById(id);return x&&x.cat===cat&&(a.owned||[]).includes(id)?Number(x.price||0):0;}
 function categoryItems(a,cat){return (a.owned||[]).map(itemById).filter(x=>x&&x.cat===cat);}
+function ensureStarterCollection(a){
+  a.owned=Array.isArray(a.owned)?a.owned:[];
+  const starterByCat={Auto:'starter_auto','Mansión':'starter_mansion','Animal':'starter_animal','Joya':'starter_jewel','Yate':'starter_yacht','Jet':'starter_jet'};
+  for(const cat of DUEL_CATS){
+    if(!categoryItems(a,cat).length && itemById(starterByCat[cat])) a.owned.push(starterByCat[cat]);
+  }
+  a.owned=Array.from(new Set(a.owned));
+}
+function hasDuelLoadout(a){return DUEL_CATS.every(cat=>categoryItems(a,cat).length>0);}
 function randomCats(){return [...DUEL_CATS].sort(()=>Math.random()-.5);}
-function findWaiting(stake,name){const waiting=matchmaking.get(stake);if(!waiting||waiting===name)return null;const a=db.accounts[waiting];if(!a||Number(a.money||0)<stake){matchmaking.delete(stake);return null;}return waiting;}
+function findWaiting(stake,name){const waiting=matchmaking.get(stake);if(!waiting||waiting===name)return null;if(![...sessions.values()].includes(waiting)){matchmaking.delete(stake);return null;}const a=db.accounts[waiting];if(!a||Number(a.money||0)<stake||!hasDuelLoadout(a)){matchmaking.delete(stake);return null;}return waiting;}
 function removeFromQueues(name){for(const [stake,n] of matchmaking.entries())if(n===name)matchmaking.delete(stake);}
 function createMatch(a,b,stake){
   const id=crypto.randomBytes(12).toString('hex');
@@ -130,7 +139,7 @@ async function api(req,res,p){
     const rows=wealthSort().map(([name,a],i)=>({rank:i+1,name,account:publicAccount(a)}));
     return json(res,200,{players:rows});
   }
-  if(p==='/api/me'&&req.method==='GET'){const name=authUser(req);if(!name)return json(res,401,{error:'Sesión no válida.'});return json(res,200,{name,account:publicAccount(db.accounts[name])});}
+  if(p==='/api/me'&&req.method==='GET'){const name=authUser(req);if(!name)return json(res,401,{error:'Sesión no válida.'});ensureStarterCollection(db.accounts[name]);saveDb();return json(res,200,{name,account:publicAccount(db.accounts[name])});}
   if(p==='/api/register'&&req.method==='POST'){
     const b=await body(req),name=cleanName(b.name),email=String(b.email||'').trim().toLowerCase(),pass=String(b.password||'');
     if(!/^[a-z0-9_]{3,20}$/.test(name))return json(res,400,{error:'Usuario: 3-20 caracteres (a-z, 0-9, _).'});
@@ -138,10 +147,10 @@ async function api(req,res,p){
     if(pass.length<6)return json(res,400,{error:'La contraseña debe tener mínimo 6 caracteres.'});
     if(db.accounts[name])return json(res,409,{error:'Ese usuario ya existe.'});
     if(Object.values(db.accounts).some(a=>a.email===email))return json(res,409,{error:'Ese correo ya está registrado.'});
-    const salt=crypto.randomBytes(16).toString('hex');const a=makeAccount({email,salt,passwordHash:hashPassword(pass,salt)});db.accounts[name]=a;saveDb();const token=crypto.randomBytes(32).toString('hex');sessions.set(token,name);return json(res,201,{token,name,account:publicAccount(a)});
+    const salt=crypto.randomBytes(16).toString('hex');const a=makeAccount({email,salt,passwordHash:hashPassword(pass,salt)});ensureStarterCollection(a);db.accounts[name]=a;saveDb();const token=crypto.randomBytes(32).toString('hex');sessions.set(token,name);return json(res,201,{token,name,account:publicAccount(a)});
   }
   if(p==='/api/login'&&req.method==='POST'){
-    const b=await body(req),name=cleanName(b.name),pass=String(b.password||''),a=db.accounts[name];if(!a)return json(res,401,{error:'Cuenta no encontrada.'});if(!a.passwordHash||hashPassword(pass,a.salt)!==a.passwordHash)return json(res,401,{error:'Contraseña incorrecta.'});const token=crypto.randomBytes(32).toString('hex');sessions.set(token,name);return json(res,200,{token,name,account:publicAccount(a)});
+    const b=await body(req),name=cleanName(b.name),pass=String(b.password||''),a=db.accounts[name];if(!a)return json(res,401,{error:'Cuenta no encontrada.'});if(!a.passwordHash||hashPassword(pass,a.salt)!==a.passwordHash)return json(res,401,{error:'Contraseña incorrecta.'});ensureStarterCollection(a);saveDb();const token=crypto.randomBytes(32).toString('hex');sessions.set(token,name);return json(res,200,{token,name,account:publicAccount(a)});
   }
   if(p==='/api/forgot'&&req.method==='POST'){
     const b=await body(req),email=String(b.email||'').trim().toLowerCase(),entry=Object.entries(db.accounts).find(([,a])=>a.email===email);if(!entry)return json(res,200,{ok:true,message:'Si el correo existe, recibirás un enlace de recuperación.'});const [name]=entry,token=crypto.randomBytes(32).toString('hex');resetTokens.set(token,{name,expires:Date.now()+30*60000});const base=process.env.PUBLIC_URL||`http://localhost:${PORT}`;const link=`${base}/?reset=${token}`;const sent=await sendRecoveryEmail(email,link);return json(res,200,{ok:true,message:sent?'Revisa tu correo para cambiar la contraseña.':'La recuperación por correo necesita configurar RESEND_API_KEY y FROM_EMAIL en Render.'});
@@ -215,23 +224,23 @@ async function api(req,res,p){
   }
   // -------- INVITACIONES DE DUELO ENTRE AMIGOS --------
   if(p==='/api/duel/invite'&&req.method==='POST'){
-    if(!name)return json(res,401,{error:'Sesión no válida.'});const b=await body(req),target=cleanName(b.name),stake=Number(b.stake),a=db.accounts[name];if(!db.accounts[target])return json(res,404,{error:'Jugador no encontrado.'});if(target===name)return json(res,400,{error:'No puedes retarte a ti mismo.'});if(!isFriend(name,target))return json(res,403,{error:'Primero deben ser amigos.'});if(!DUEL_STAKES.includes(stake))return json(res,400,{error:'Apuesta no válida.'});if(Number(a.money||0)<stake)return json(res,400,{error:'No tienes suficiente dinero virtual.'});
+    if(!name)return json(res,401,{error:'Sesión no válida.'});const b=await body(req),target=cleanName(b.name),stake=Number(b.stake),a=db.accounts[name];if(!db.accounts[target])return json(res,404,{error:'Jugador no encontrado.'});if(target===name)return json(res,400,{error:'No puedes retarte a ti mismo.'});if(!isFriend(name,target))return json(res,403,{error:'Primero deben ser amigos.'});if(!DUEL_STAKES.includes(stake))return json(res,400,{error:'Apuesta no válida.'});if(Number(a.money||0)<stake)return json(res,400,{error:'No tienes suficiente dinero virtual.'});ensureStarterCollection(a);ensureStarterCollection(db.accounts[target]);saveDb();if(!hasDuelLoadout(a)||!hasDuelLoadout(db.accounts[target]))return json(res,400,{error:'Ambos jugadores necesitan una pieza en cada categoría para competir.'});
     const invId=crypto.randomBytes(10).toString('hex');const inv={id:invId,from:name,to:target,stake,createdAt:Date.now()};db.duelInvites=db.duelInvites||[];db.duelInvites=db.duelInvites.filter(x=>Date.now()-x.createdAt<10*60*1000);db.duelInvites.push(inv);saveDb();return json(res,200,{ok:true,id:invId});
   }
   if(p==='/api/duel/invites'&&req.method==='GET'){
     if(!name)return json(res,401,{error:'Sesión no válida.'});db.duelInvites=db.duelInvites||[];db.duelInvites=db.duelInvites.filter(x=>Date.now()-x.createdAt<10*60*1000);saveDb();return json(res,200,{invites:db.duelInvites.filter(x=>x.to===name)});
   }
   if(p==='/api/duel/respond'&&req.method==='POST'){
-    if(!name)return json(res,401,{error:'Sesión no válida.'});const b=await body(req),id=String(b.id||''),accept=!!b.accept;db.duelInvites=db.duelInvites||[];const i=db.duelInvites.find(x=>x.id===id&&x.to===name);if(!i)return json(res,404,{error:'Invitación no encontrada o vencida.'});db.duelInvites=db.duelInvites.filter(x=>x.id!==id);if(!accept){saveDb();return json(res,200,{ok:true,accepted:false});}if(Number(db.accounts[name].money||0)<i.stake||Number(db.accounts[i.from].money||0)<i.stake){saveDb();return json(res,400,{error:'Uno de los jugadores ya no tiene suficiente dinero virtual.'});}const m=createMatch(i.from,name,i.stake);saveDb();return json(res,200,{ok:true,accepted:true,match:matchView(m,name)});
+    if(!name)return json(res,401,{error:'Sesión no válida.'});const b=await body(req),id=String(b.id||''),accept=!!b.accept;db.duelInvites=db.duelInvites||[];const i=db.duelInvites.find(x=>x.id===id&&x.to===name);if(!i)return json(res,404,{error:'Invitación no encontrada o vencida.'});db.duelInvites=db.duelInvites.filter(x=>x.id!==id);if(!accept){saveDb();return json(res,200,{ok:true,accepted:false});}ensureStarterCollection(db.accounts[name]);ensureStarterCollection(db.accounts[i.from]);if(Number(db.accounts[name].money||0)<i.stake||Number(db.accounts[i.from].money||0)<i.stake){saveDb();return json(res,400,{error:'Uno de los jugadores ya no tiene suficiente dinero virtual.'});}if(!hasDuelLoadout(db.accounts[name])||!hasDuelLoadout(db.accounts[i.from])){saveDb();return json(res,400,{error:'Ambos jugadores necesitan una pieza en cada categoría para competir.'});}const m=createMatch(i.from,name,i.stake);saveDb();return json(res,200,{ok:true,accepted:true,match:matchView(m,name)});
   }
   // -------- MATCHMAKING 100% JUGADORES REALES --------
   if(p==='/api/match/queue'&&req.method==='POST'){
-    if(!name)return json(res,401,{error:'Sesión no válida.'});const b=await body(req),stake=Number(b.stake),a=db.accounts[name];if(!DUEL_STAKES.includes(stake))return json(res,400,{error:'Apuesta no válida.'});if(Number(a.money||0)<stake)return json(res,400,{error:'No tienes suficiente dinero virtual.'});
+    if(!name)return json(res,401,{error:'Sesión no válida.'});const b=await body(req),stake=Number(b.stake),a=db.accounts[name];ensureStarterCollection(a);saveDb();if(!DUEL_STAKES.includes(stake))return json(res,400,{error:'Apuesta no válida.'});if(Number(a.money||0)<stake)return json(res,400,{error:'No tienes suficiente dinero virtual.'});if(!hasDuelLoadout(a))return json(res,400,{error:'Tu colección debe tener al menos un artículo en cada categoría.'});
     for(const m of matches.values()){if(m.players.includes(name)&&!m.finished)return json(res,200,matchView(m,name));}
     removeFromQueues(name);
     const waiting=findWaiting(stake,name);
     if(waiting){matchmaking.delete(stake);const m=createMatch(waiting,name,stake);return json(res,200,matchView(m,name));}
-    matchmaking.set(stake,name);return json(res,200,{queued:true,stake,message:'Buscando a otro jugador real...'});
+    matchmaking.set(stake,name);return json(res,200,{queued:true,stake,message:'Buscando a otro jugador real...',account:publicAccount(a)});
   }
   if(p==='/api/match/status'&&req.method==='GET'){
     if(!name)return json(res,401,{error:'Sesión no válida.'});
